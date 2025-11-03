@@ -24,10 +24,10 @@ ENV/
 # data/*.csv
 
 # Models (large files)
-# Uncomment if you don't want to track model files
-# models/*.pkl
-# models/*.h5
-# models/*.pt
+models/*.pkl
+models/*.h5
+models/*.pt
+!models/.gitkeep
 
 # Jupyter Notebook
 .ipynb_checkpoints
