@@ -71,14 +71,21 @@ def predict():
         
         # Map prediction to meaningful message
         class_messages = {
-            0: "Optimal Charging Duration: Short - Ideal battery health, standard charging acceptable.",
-            1: "Optimal Charging Duration: Medium - Normal battery condition, moderate charging recommended.",
-            2: "Optimal Charging Duration: Long - Battery needs attention, extended charging required."
+            0: "⚡ Optimal Charging: Short Duration - Excellent battery health!",
+            1: "⚡ Optimal Charging: Medium Duration - Normal battery condition.",
+            2: "⚠️ Optimal Charging: Long Duration - Battery maintenance recommended."
+        }
+        
+        result_types = {
+            0: "short",
+            1: "medium",
+            2: "long"
         }
         
         result_message = class_messages.get(prediction, f"Prediction: Class {prediction}")
+        result_type = result_types.get(prediction, "short")
         
-        return render_template('index.html', result=result_message)
+        return render_template('index.html', result=result_message, result_type=result_type)
         
     except Exception as e:
         return render_template('index.html', result=f"Error: {str(e)}")

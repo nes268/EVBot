@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Maintenance Advisor</title>
+    <title>⚡ EV Maintenance Advisor | AI-Powered Battery Health</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>⚡ EV Maintenance Advisor</h1>
+        <h1>EV Maintenance Advisor</h1>
         <form action="/predict" method="post">
 
             <div class="grid">
@@ -64,7 +64,7 @@
         </form>
 
         {% if result %}
-        <div class="result">
+        <div class="result" data-type="{{ result_type if result_type else 'short' }}">
             <h2>{{ result }}</h2>
         </div>
         {% endif %}
