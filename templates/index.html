@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Maintenance Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ EV Maintenance Advisor</h1>
+        <form action="/predict" method="post">
+
+            <div class="grid">
+                <label>SOC (%)</label>
+                <input type="number" step="0.1" name="soc" required>
+
+                <label>Voltage (V)</label>
+                <input type="number" step="0.1" name="voltage" required>
+
+                <label>Current (A)</label>
+                <input type="number" step="0.1" name="current" required>
+
+                <label>Battery Temp (°C)</label>
+                <input type="number" step="0.1" name="battery_temp" required>
+
+                <label>Ambient Temp (°C)</label>
+                <input type="number" step="0.1" name="ambient_temp" required>
+
+                <label>Charging Duration (min)</label>
+                <input type="number" step="0.1" name="duration" required>
+
+                <label>Degradation Rate (%)</label>
+                <input type="number" step="0.1" name="degradation" required>
+
+                <label>Charging Mode</label>
+                <select name="mode">
+                    <option>Fast</option>
+                    <option>Normal</option>
+                    <option>Slow</option>
+                </select>
+
+                <label>Efficiency (%)</label>
+                <input type="number" step="0.1" name="efficiency" required>
+
+                <label>Battery Type</label>
+                <select name="battery_type">
+                    <option>Li-ion</option>
+                    <option>LiFePO4</option>
+                </select>
+
+                <label>Charging Cycles</label>
+                <input type="number" name="cycles" required>
+
+                <label>EV Model</label>
+                <select name="ev_model">
+                    <option>Model A</option>
+                    <option>Model B</option>
+                    <option>Model C</option>
+                </select>
+            </div>
+
+            <button type="submit">🔍 Predict</button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <h2>{{ result }}</h2>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+
