@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVBot Dashboard | Analytics</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #121212;
+            min-height: 100vh;
+            color: #e0e0e0;
+            font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 159, 10, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .navbar { 
+            background: rgba(18, 18, 18, 0.8) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 15px 0;
+            border-radius: 12px;
+            margin: 0 20px 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .navbar-brand { 
+            font-weight: 700;
+            font-size: 1.5em;
+            color: #22C55E !important;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+        }
+        
+        .navbar .nav-link { 
+            color: #e0e0e0 !important;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 8px 15px !important;
+        }
+        
+        .navbar .nav-link:hover {
+            color: #3B82F6 !important;
+            background: rgba(59, 130, 246, 0.1);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 95%;
+            margin: 20px auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-container { 
+            margin: 0; 
+            width: 100%;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 
+                0 15px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-empty {
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            bottom: 18px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            background: rgba(12, 12, 12, 0.7);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            color: #94a3b8;
+            font-size: 0.95em;
+            letter-spacing: 0.01em;
+            backdrop-filter: blur(6px);
+            pointer-events: none;
+        }
+        
+        .chart-container h4 {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1em;
+        }
+        
+        #fig1, #fig2, #fig3, #fig4 {
+            width: 100%;
+            height: 350px;
+        }
+        
+        h1 { 
+            text-align: center; 
+            color: #3B82F6;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.8em;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stats-cards {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px auto;
+            width: 95%;
+            flex-wrap: nowrap;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-card {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px 15px;
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #3B82F6;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.5),
+                0 0 60px rgba(34, 197, 94, 0.2);
+            border-color: #22C55E;
+        }
+        
+        .stat-card h3 {
+            color: #3B82F6;
+            font-size: 1.8em;
+            margin: 0;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-card h3.loading {
+            color: #94a3b8;
+            text-shadow: none;
+            letter-spacing: 0.2em;
+            animation: pulseDots 1s ease-in-out infinite;
+        }
+
+        @keyframes pulseDots {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        .stat-card p {
+            color: #e0e0e0;
+            font-size: 0.9em;
+            margin: 10px 0 0 0;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .filters-container {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px auto;
+            width: 95%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 0.9em;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .filter-select {
+            padding: 12px 16px;
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(18, 18, 18, 0.6);
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:hover {
+            border-color: #22C55E;
+            background: rgba(18, 18, 18, 0.7);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1),
+                        0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .reset-btn {
+            padding: 12px 24px;
+            background: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            align-self: flex-end;
+        }
+        
+        .reset-btn:hover {
+            background: #22C55E;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+        }
+        
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                width: 98%;
+            }
+
+            .chart-container {
+                padding: 20px;
+            }
+            
+            #fig1, #fig2, #fig3, #fig4 {
+                height: 300px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .navbar {
+                margin: 0 10px 20px 10px;
+                padding: 12px 0;
+            }
+            
+            .stats-cards {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .stat-card {
+                flex: 0 0 calc(50% - 6px);
+                min-width: 0;
+            }
+            
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .reset-btn {
+                align-self: stretch;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">EVBot</a>
+    <div class="d-flex">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/predict">Check Charge</a>
+      <a class="nav-link" href="/dashboard">Dashboard</a>
+      <a class="nav-link" href="/chatbot">Chatbot</a>
+    </div>
+  </div>
+</nav>
+
+<h1>EV Performance Analytics Dashboard</h1>
+
+<!-- Filter Controls -->
+<div class="filters-container">
+    <div class="filter-group">
+        <label for="ev_model_filter">EV Model:</label>
+        <select id="ev_model_filter" class="filter-select">
+            <option value="all">All Models</option>
+            {% for model in ev_models %}
+            <option value="{{ model }}">{{ model }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="battery_type_filter">Battery Type:</label>
+        <select id="battery_type_filter" class="filter-select">
+            <option value="all">All Types</option>
+            {% for type in battery_types %}
+            <option value="{{ type }}">{{ type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="charging_mode_filter">Charging Mode:</label>
+        <select id="charging_mode_filter" class="filter-select">
+            <option value="all">All Modes</option>
+            {% for mode in charging_modes %}
+            <option value="{{ mode }}">{{ mode }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button id="reset_filters" class="reset-btn">Reset Filters</button>
+</div>
+
+<!-- Dynamic Stats Cards -->
+<div class="stats-cards" id="stats_cards">
+    <div class="stat-card">
+        <h3 id="total_samples">{{ stats.total_samples }}</h3>
+        <p>Total Samples</p>
+    </div>
+    <div class="stat-card">
+        <h3 id="avg_efficiency">{{ stats.avg_efficiency }}%</h3>
+        <p>Avg Efficiency</p>
+    </div>
+    <div class="stat-card">
+        <h3 id="avg_degradation">{{ stats.avg_degradation }}%</h3>
+        <p>Avg Degradation</p>
+    </div>
+    <div class="stat-card">
+        <h3 id="class_short">{{ stats.class_0 }}</h3>
+        <p>Short Duration</p>
+    </div>
+    <div class="stat-card">
+        <h3 id="class_medium">{{ stats.class_1 }}</h3>
+        <p>Medium Duration</p>
+    </div>
+    <div class="stat-card">
+        <h3 id="class_long">{{ stats.class_2 }}</h3>
+        <p>Long Duration</p>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-container">
+      <h4>State of Charge vs Voltage Analysis</h4>
+      <div id="fig1"></div>
+      <div class="chart-empty" data-chart-empty>Not enough data for this view.</div>
+    </div>
+
+    <div class="chart-container">
+      <h4>Efficiency per EV Model</h4>
+      <div id="fig2"></div>
+      <div class="chart-empty" data-chart-empty>Not enough data for this view.</div>
+    </div>
+
+    <div class="chart-container">
+      <h4>Optimal Charging Class Distribution</h4>
+      <div id="fig3"></div>
+      <div class="chart-empty" data-chart-empty>Not enough data for this view.</div>
+    </div>
+
+    <div class="chart-container">
+      <h4>Battery Degradation vs Charging Cycles</h4>
+      <div id="fig4"></div>
+      <div class="chart-empty" data-chart-empty>Not enough data for this view.</div>
+    </div>
+</div>
+
+<script>
+  // Initial graphs
+  const graphs = {{ graphs|safe }};
+  let hasData = {{ 'true' if has_data else 'false' }};
+  const emptyMessages = document.querySelectorAll('[data-chart-empty]');
+
+  const fallbackCharts = {
+    fig1: JSON.stringify({
+      data: [{
+        x: ['0-30% SOC', '30-70% SOC', '70-100% SOC'],
+        y: [3.65, 3.92, 4.12],
+        type: 'bar',
+        marker: { color: ['#3B82F6', '#22C55E', '#F97316'] }
+      }],
+      layout: {
+        title: 'Sample SOC vs Voltage bands',
+        yaxis: { title: 'Average Voltage (V)' },
+        template: 'plotly_dark'
+      }
+    }),
+    fig2: JSON.stringify({
+      data: [{
+        x: ['Model A', 'Model B', 'Model C'],
+        y: [97.4, 98.2, 97.9],
+        type: 'bar',
+        marker: { color: ['#3B82F6', '#22C55E', '#F97316'] }
+      }],
+      layout: { title: 'Sample efficiency per model', template: 'plotly_dark' }
+    }),
+    fig3: JSON.stringify({
+      data: [{
+        x: ['Short', 'Medium', 'Long'],
+        y: [22, 48, 30],
+        type: 'bar',
+        marker: { color: ['#22C55E', '#FACC15', '#EF4444'] }
+      }],
+      layout: {
+        title: 'Sample optimal charging class mix',
+        yaxis: { title: 'Sample Count' },
+        template: 'plotly_dark'
+      }
+    }),
+    fig4: JSON.stringify({
+      data: [{
+        x: ['0-200 Cycles', '200-400 Cycles', '400-600 Cycles', '600+ Cycles'],
+        y: [6, 8, 11, 15],
+        type: 'bar',
+        marker: { color: ['#22C55E', '#3B82F6', '#F97316', '#EF4444'] }
+      }],
+      layout: {
+        title: 'Sample degradation by cycle band',
+        yaxis: { title: 'Degradation (%)' },
+        template: 'plotly_dark'
+      }
+    })
+  };
+
+  const fallbackStats = {
+    total_samples: 120,
+    avg_efficiency: 98.1,
+    avg_degradation: 7.8,
+    class_0: 24,
+    class_1: 52,
+    class_2: 44,
+  };
+
+  // Prepare stat elements with baseline values
+  const statElements = {
+    total_samples: document.getElementById('total_samples'),
+    avg_efficiency: document.getElementById('avg_efficiency'),
+    avg_degradation: document.getElementById('avg_degradation'),
+    class_short: document.getElementById('class_short'),
+    class_medium: document.getElementById('class_medium'),
+    class_long: document.getElementById('class_long'),
+  };
+
+  Object.values(statElements).forEach((el) => {
+    if (!el) return;
+    const numeric = parseFloat(el.textContent.replace(/[^0-9.\-]/g, ''));
+    el.dataset.value = isNaN(numeric) ? 0 : numeric;
+  });
+
+  function animateValue(element, target, suffix = '', decimals = 0, duration = 600) {
+    return new Promise((resolve) => {
+      const from = parseFloat(element.dataset.value || 0);
+      const start = performance.now();
+
+      function frame(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const value = from + (target - from) * progress;
+        element.textContent = `${value.toFixed(decimals)}${suffix}`;
+
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          element.dataset.value = target;
+          const finalValue = decimals === 0 ? Math.round(target) : target.toFixed(decimals);
+          element.textContent = `${finalValue}${suffix}`;
+          resolve();
+        }
+      }
+
+      requestAnimationFrame(frame);
+    });
+  }
+ 
+  // Function to update charts
+  function updateCharts(data, datasetAvailable = true) {
+    const source = datasetAvailable ? data : fallbackCharts;
+
+    Plotly.newPlot('fig1', JSON.parse(source.fig1).data, JSON.parse(source.fig1).layout);
+    Plotly.newPlot('fig2', JSON.parse(source.fig2).data, JSON.parse(source.fig2).layout);
+    Plotly.newPlot('fig3', JSON.parse(source.fig3).data, JSON.parse(source.fig3).layout);
+    Plotly.newPlot('fig4', JSON.parse(source.fig4).data, JSON.parse(source.fig4).layout);
+
+    emptyMessages.forEach((msg) => {
+      if (!datasetAvailable) {
+        msg.textContent = 'No matching data — showing sample trends.';
+        msg.style.display = 'flex';
+      } else {
+        msg.style.display = 'none';
+      }
+    });
+  }
+  
+  // Function to update statistics
+  function updateStats(stats, datasetAvailable = true) {
+    const sourceStats = datasetAvailable ? stats : fallbackStats;
+
+    const sequence = [
+      { el: statElements.total_samples, value: sourceStats.total_samples, suffix: '', decimals: 0 },
+      { el: statElements.avg_efficiency, value: sourceStats.avg_efficiency, suffix: '%', decimals: 2 },
+      { el: statElements.avg_degradation, value: sourceStats.avg_degradation, suffix: '%', decimals: 2 },
+      { el: statElements.class_short, value: sourceStats.class_0, suffix: '', decimals: 0 },
+      { el: statElements.class_medium, value: sourceStats.class_1, suffix: '', decimals: 0 },
+      { el: statElements.class_long, value: sourceStats.class_2, suffix: '', decimals: 0 },
+    ];
+
+    sequence.reduce((promise, item) => {
+      if (!item.el) return promise;
+      return promise.then(() => animateValue(item.el, item.value, item.suffix, item.decimals));
+    }, Promise.resolve());
+  }
+  
+  // Function to fetch filtered data
+  function fetchFilteredData() {
+    const evModel = document.getElementById('ev_model_filter').value;
+    const batteryType = document.getElementById('battery_type_filter').value;
+    const chargingMode = document.getElementById('charging_mode_filter').value;
+    
+    // Show loading state
+    document.querySelectorAll('.stat-card h3').forEach(el => {
+      el.textContent = '...';
+      el.classList.add('loading');
+    });
+    
+    // Fetch data from API
+    fetch(`/api/dashboard/data?ev_model=${evModel}&battery_type=${batteryType}&charging_mode=${chargingMode}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        document.querySelectorAll('.stat-card h3').forEach(el => el.classList.remove('loading'));
+        updateStats(data.stats, data.has_data);
+        updateCharts(data, data.has_data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        document.querySelectorAll('.stat-card h3').forEach(el => el.classList.remove('loading'));
+        // Reload page on error
+        window.location.reload();
+      });
+  }
+  
+  // Initialize charts on page load
+  updateStats({
+    total_samples: parseFloat(statElements.total_samples.dataset.value || statElements.total_samples.textContent) || 0,
+    avg_efficiency: parseFloat(statElements.avg_efficiency.dataset.value || statElements.avg_efficiency.textContent) || 0,
+    avg_degradation: parseFloat(statElements.avg_degradation.dataset.value || statElements.avg_degradation.textContent) || 0,
+    class_0: parseFloat(statElements.class_short.dataset.value || statElements.class_short.textContent) || 0,
+    class_1: parseFloat(statElements.class_medium.dataset.value || statElements.class_medium.textContent) || 0,
+    class_2: parseFloat(statElements.class_long.dataset.value || statElements.class_long.textContent) || 0,
+  }, hasData);
+  updateCharts(graphs, hasData);
+  
+  // Add event listeners to filters
+  document.getElementById('ev_model_filter').addEventListener('change', fetchFilteredData);
+  document.getElementById('battery_type_filter').addEventListener('change', fetchFilteredData);
+  document.getElementById('charging_mode_filter').addEventListener('change', fetchFilteredData);
+  document.getElementById('reset_filters').addEventListener('click', function() {
+    document.getElementById('ev_model_filter').value = 'all';
+    document.getElementById('battery_type_filter').value = 'all';
+    document.getElementById('charging_mode_filter').value = 'all';
+    fetchFilteredData();
+  });
+</script>
+
+</body>
+</html>
+

@@ -1,132 +1,135 @@
-# ⚡ EVBot - AI-Powered Electric Vehicle Maintenance Advisor
+# ⚡ EVBot – EV Battery Intelligence Hub
 
-A smart web application that predicts optimal charging duration for electric vehicles using machine learning.
+A full-stack assistant that predicts optimal charging duration, visualizes fleet health, and answers EV battery questions with AI-powered context.
 
-## 🌟 Features
+## 🚀 Highlights
 
-- **AI-Powered Predictions**: Random Forest Classifier with 99.5% accuracy
-- **Beautiful EV-Themed Interface**: Modern gradient design with smooth animations
-- **Real-time Predictions**: Instant battery health recommendations
-- **Three Charging Classes**: Short, Medium, and Long duration recommendations
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **Smart Predictions** – Random Forest classifier (99.5% accuracy) suggests short/medium/long charging strategies.
+- **Interactive Dashboard** – Filterable analytics with always-on sample visualisations so charts never go blank.
+- **Conversational Advisor** – Chatbot can blend ML predictions with curated EV guidance and optional read-aloud answers.
+- **Responsive UI** – Gradient-driven theme, glassmorphism cards, and polished mobile experience.
 
-## 🚀 Quick Start
+## 🧰 Tech Stack
 
-### Prerequisites
-- Python 3.8+
-- Virtual environment (venv)
+| Layer        | Tools |
+|--------------|-------|
+| Backend      | Flask, Python 3, scikit-learn, pandas, NumPy, joblib |
+| Frontend     | HTML5, Jinja2, Bootstrap 5, Plotly.js, custom CSS |
+| Chatbot APIs | OpenAI SDK, Hugging Face `InferenceClient`, python-dotenv |
+| UX Extras    | Web Speech API (read-aloud), Plotly animations |
+| Data         | CSV dataset (`data/ev_battery_charging_data.csv`), label encoders |
 
-### Installation
+## 📦 Quick Start
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/nes268/EVBot.git
-   cd EVBot
-   ```
+### 1. Clone & enter the project
+```bash
+git clone https://github.com/nes268/EVBot.git
+cd EVBot
+```
 
-2. **Activate virtual environment**
-   ```bash
-   # Windows
-   venv\Scripts\activate
-   
-   # Linux/Mac
-   source venv/bin/activate
-   ```
+### 2. Activate the virtual environment
+```bash
+# Windows
+venv\Scripts\activate
 
-3. **Install dependencies** (if needed)
-   ```bash
-   pip install -r requirements.txt
-   ```
+# macOS / Linux
+source venv/bin/activate
+```
 
-4. **Train the model** (first time only)
-   ```bash
-   python train_model.py
-   ```
+### 3. Install Python dependencies
+```bash
+pip install -r requirements.txt
+```
 
-5. **Run the application**
-   ```bash
-   # Windows
-   run_app.bat
-   
-   # Linux/Mac
-   bash run_app.sh
-   ```
+### 4. Train the model (first run only)
+```bash
+python train_model.py
+```
 
-6. **Open your browser**
-   ```
-   http://127.0.0.1:5000
-   ```
+### 5. Configure chatbot credentials (pick one provider)
+**OpenAI**
+```bash
+# Windows (persist across sessions)
+setx OPENAI_API_KEY "your_openai_key"
+setx OPENAI_MODEL "gpt-4o-mini"   # optional override
 
-## 📊 Dataset
+# Current shell only
+$env:OPENAI_API_KEY="your_openai_key"
+```
 
-The model is trained on 1,000 EV battery charging records with 13 features:
-- SOC (State of Charge)
-- Voltage, Current, Temperatures
-- Charging Duration and Cycles
-- Degradation Rate
-- Battery Type, EV Model, Charging Mode
+**Hugging Face**
+```bash
+# Windows (persist across sessions)
+setx HF_API_KEY "your_hf_key"
+setx HF_MODEL "HuggingFaceH4/zephyr-7b-beta"   # optional override
 
-## 🎨 Design Features
+# Current shell only
+$env:HF_API_KEY="your_hf_key"
+```
+> Restart your terminal after using `setx`, or export in-session variables before launching the app.
 
-- **Dark gradient background** with animated electric particles
-- **Glass-morphism cards** with backdrop blur
-- **Electric glow effects** on hover
-- **Color-coded results**: Green (Excellent), Yellow (Normal), Red (Attention)
-- **Smooth animations** and transitions
-- **Mobile-responsive** grid layout
+### 6. Launch EVBot
+```bash
+# Windows
+run_app.bat
 
-## 📁 Project Structure
+# macOS / Linux
+bash run_app.sh
+```
+Then open the browser at http://127.0.0.1:5000
 
+## 🗂 Project Structure
 ```
 EVBot/
 ├── app/
-│   ├── app.py              # Flask application
-│   ├── chatbot.py          # Chatbot interface (coming soon)
-│   └── ml_model.py         # Model utilities
+│   ├── app.py          # Flask entry-point & REST endpoints
+│   ├── chatbot.py      # API clients + ML-assisted responses
+│   └── ml_model.py     # Shared preprocessing & prediction helpers
 ├── data/
 │   └── ev_battery_charging_data.csv
 ├── models/
-│   ├── ev_model.pkl        # Trained model
-│   └── label_encoders.pkl  # Feature encoders
+│   ├── ev_model.pkl
+│   └── label_encoders.pkl
 ├── static/
-│   └── style.css           # EV-themed styling
+│   └── style.css
 ├── templates/
-│   └── index.html          # Main interface
+│   ├── index.html
+│   ├── predict.html
+│   ├── dashboard.html
+│   └── chatbot.html
 ├── data_preprocessing.ipynb
-├── train_model.py
-└── requirements.txt
+├── requirements.txt
+└── train_model.py
 ```
 
-## 🧪 Model Performance
+## 📊 Dataset & Model
+- 1,000 charging sessions with 13 engineered features (SOC, temps, cycles, mode, etc.).
+- Random Forest (200 estimators) classifies optimal charge window (short/medium/long).
+- Encoders + model stored under `models/` for quick reuse.
 
-- **Accuracy**: 99.5%
-- **Algorithm**: Random Forest Classifier (200 trees)
-- **Classes**:
-  - Class 0: Short duration (20%)
-  - Class 1: Medium duration (40%)
-  - Class 2: Long duration (40%)
+## 🧭 Using EVBot
 
-## 🔧 Technologies Used
+### Predict Charging Duration
+1. Visit **Check Charge**.
+2. Enter SOC, voltage, current, temperatures, cycles, and categorical meta-data.
+3. Review instant recommendation plus colour-coded result card.
 
-- **Backend**: Flask, scikit-learn
-- **Frontend**: HTML5, CSS3 (Gradient animations, Glass-morphism)
-- **ML**: Random Forest, Pandas, NumPy
-- **Data**: Label Encoding, Train-Test Split
+### Explore the Dashboard
+- Filter by EV model, battery type, and charging mode.
+- Stats animate sequentially; if filters remove all rows, sample trends keep charts informative.
+- Plotly visuals: SOC vs Voltage, Efficiency by Model, Charging Class Mix, Degradation vs Cycles.
 
-## 📝 Usage
+### Chat with EVBot
+- Ask for guidance or toggle **Include EV parameters** to have the ML model inform the conversation.
+- Optional **Read responses aloud** checkbox uses the browser’s speech synthesis.
+- Supports OpenAI or Hugging Face API keys without code changes.
 
-1. Fill in the battery parameters in the form
-2. Click "Predict" to get instant recommendations
-3. Receive color-coded results with maintenance advice
-
-## 🤝 Contributing
-
-Feel free to submit issues, fork the repository, and create pull requests!
+## 🤝 Contributing & Support
+- Issues and pull requests are welcome — please open a ticket describing bugs, enhancements, or data questions.
+- Feel free to fork the repo and submit PRs with improvements.
 
 ## 📄 License
+Released under the MIT License.
 
-MIT License
-
-## 👨‍💻 Author
-
-nes268
+## 👤 Author
+**nes268**
