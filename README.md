@@ -121,8 +121,71 @@ EVBot/
 
 ### Chat with EVBot
 - Ask for guidance or toggle **Include EV parameters** to have the ML model inform the conversation.
-- Optional **Read responses aloud** checkbox uses the browser’s speech synthesis.
+- Optional **Read responses aloud** checkbox uses the browser's speech synthesis.
 - Supports OpenAI or Hugging Face API keys without code changes.
+
+## 📓 Working with Jupyter Notebooks in VS Code
+
+### Step-by-Step: Create and Work on .ipynb in VS Code
+
+#### 1️⃣ Install the needed VS Code extensions
+
+1. Open VS Code → Left side Extensions icon (or press `Ctrl + Shift + X`)
+2. Search and install:
+   - ✅ **Jupyter** – Enables notebook editing and execution
+   - ✅ **Python** – Provides Python language support and IntelliSense
+
+These two extensions let you create and run notebook cells directly inside VS Code.
+
+#### 2️⃣ Create your notebook
+
+1. Click **File → New File**
+2. Save it as: `Week3_EVBot.ipynb`
+3. VS Code will automatically switch to **Notebook View** (with **"+ Code"** and **"+ Markdown"** buttons)
+
+#### 3️⃣ Structure your notebook
+
+You'll mix text and code cells like this:
+
+**Markdown cell (text):**
+```markdown
+## Problem Statement
+Explain your problem briefly…
+```
+
+**Code cell:**
+```python
+# Import libraries
+import pandas as pd
+import numpy as np
+...
+```
+
+**Markdown cell:**
+```markdown
+## Solution
+Describe your model, chatbot integration, etc.
+```
+
+**Code cell:**
+```python
+# Your model code here
+```
+
+You can run each cell using ▶️ icons beside them.
+
+#### 4️⃣ Copy your existing code
+
+- From your `.py` files → copy relevant parts (data loading, ML, chatbot API call, etc.)
+- Paste them into separate code cells in logical order
+
+#### 5️⃣ Run everything inside VS Code
+
+- You'll see outputs (like tables, accuracy scores, chatbot responses) right below each cell — just like Jupyter Notebook online
+- Click the **Run** button above each cell, or press `Shift + Enter`
+- Use `Ctrl + Enter` to run the current cell without moving to the next
+
+> 💡 **Tip**: Make sure your virtual environment is activated and has all dependencies installed (`pip install -r requirements.txt`) before running notebook cells. Select your Python interpreter by clicking on the Python version in the bottom-right status bar and choosing `.\venv\Scripts\python.exe` (Windows).
 
 ## 🤝 Contributing & Support
 - Issues and pull requests are welcome — please open a ticket describing bugs, enhancements, or data questions.
